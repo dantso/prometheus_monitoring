@@ -9,8 +9,6 @@ Monitoring examples using Prometheus python client libraries
 pip install prometheus_clien
 ```
 ## Clone this Repo
-``` git clone https://github.com/becloudready/prometheus_monitoring.git
-```
 
 ### Start the application
 
