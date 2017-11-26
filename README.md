@@ -3,17 +3,15 @@ Monitoring examples using Prometheus python client libraries
 
 # Installation and Setup
 
-## Install dependencies
+## Make sure you have vagrant installed on your PC
 
 ```
-pip install prometheus_client
+vagrant up
 ```
-## Clone this Repo
 
-### Start the application
-
-```
-python gauge-example.py
-```
 Open browser and check on port 8000 of the instance where you are running this application.
+
+```
+http://localhost:9090
+```
 
