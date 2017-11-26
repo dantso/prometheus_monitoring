@@ -6,7 +6,7 @@ Monitoring examples using Prometheus python client libraries
 ## Install dependencies
 
 ```
-pip install prometheus_clien
+pip install prometheus_client
 ```
 ## Clone this Repo
 
