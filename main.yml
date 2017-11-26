@@ -2,6 +2,18 @@
 - hosts: all
   gather_facts: true
   tasks:
+  - name: Install packages
+    yum: pkg={{item}} state=installed
+    with_items:
+     - epel-release
+    become: true
+
+  - name: Install packages
+    yum: pkg={{item}} state=installed
+    with_items:
+     - python-pip   
+    become: true
+ 
   - name: Unarchive a file that needs to be downloaded (added in 2.0)
     unarchive:
       src: "{{ item }}"
@@ -18,3 +30,10 @@
     shell: cd /home/vagrant/prometheus-2.0.0.linux-amd64 ; nohup ./prometheus >/dev/null 2>&1 & sleep 1
   - name: Start Node exporter
     shell: nohup /home/vagrant/node_exporter-0.15.1.linux-amd64/node_exporter &
+  - name: Install Prometheus Python client
+    pip:
+      name: prometheus_client
+    become: true
+
+  - name: Start the Custom Gauge exporter app
+    shell: nohup python /vagrant/gauge-example.py &
