@@ -15,3 +15,5 @@ Open browser and check on port 8000 of the instance where you are running this a
 http://localhost:9090
 ```
 
+More info: 
+https://www.becloudready.com/single-post/2017/11/24/Monitoring-with-Prometheus---Working-Hello-World-style-Example
