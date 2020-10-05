@@ -1,5 +1,6 @@
-# prometheus_monitoring
-Monitoring examples using Prometheus python client libraries
+### Prometheus and Grafana
+
+
 
 ## Installation and Setup Using EC2 instance
 
@@ -17,7 +18,6 @@ $ adduser sonu
 
 Enter the username you wish and set up a password. 
 Give your user root privelages.
-
 
 ```
 $ usermod -ag sudo sonu
@@ -56,6 +56,8 @@ $ sudo mkdir /etc/prometheus
 $ sudo mkdir /var/lib/prometheus
 ```
 
+Set the user and group ownership on the new directories to the prometheus user.
+
 ```
 $ sudo chown prometheus:prometheus /etc/prometheus
 $ sudo chown prometheus:prometheus /var/lib/prometheus
@@ -63,48 +65,68 @@ $ sudo chown prometheus:prometheus /var/lib/prometheus
 
 # Step 2 - Download Prometheus
 
+Download the latest version of prometheus: https://prometheus.io/download/
+
 ```
 $ cd ~
-$ curl -LO https://github.com/prometheus/prometheus/releases/download/v2.0.0/prometheus-2.0.0.linux-amd64.tar.gz 
+$ curl -LO https://github.com/prometheus/prometheus/releases/download/v2.21.0/prometheus-2.21.0.linux-amd64.tar.gz 
 ```
 
-```
-$ sha256sum prometheus-2.0.0.linux-amd64.tar.gz
-```
+Use the sha256sum command to generate a checksum and compare it to the checksum on the prometheus website to ensure correct download.
 
 ```
-$ tar xvf prometheus-2.0.0.linux-amd64.tar.gz
+$ sha256sum prometheus-2.21.0.linux-amd64.tar.gz
 ```
 
+Tar the download
+
 ```
-$ sudo cp prometheus-2.0.0.linux-amd64/prometheus /usr/local/bin/
-$ sudo cp prometheus-2.0.0.linux-amd64/promtool /usr/local/bin/
+$ tar xvf prometheus-2.21.0.linux-amd64.tar.gz
 ```
+
+Copy the binaries to the proper directories
+
+```
+$ sudo cp prometheus-2.21.0.linux-amd64/prometheus /usr/local/bin/
+$ sudo cp prometheus-2.21.0.linux-amd64/promtool /usr/local/bin/
+```
+
+Set the user and group ownership on the binaries to the prometheus user created before.
 
 ```
 $ sudo chown prometheus:prometheus /usr/local/bin/prometheus
 $ sudo chown prometheus:prometheus /usr/local/bin/promtool
 ```
 
+Copy the consoles and console_libraries directories to /etc/prometheus.
+
 ```
-$ sudo cp -r prometheus-2.0.0.linux-amd64/consoles /etc/prometheus
-$ sudo cp -r prometheus-2.0.0.linux-amd64/console_libraries /etc/prometheus
+$ sudo cp -r prometheus-2.21.0.linux-amd64/consoles /etc/prometheus
+$ sudo cp -r prometheus-2.21.0.linux-amd64/console_libraries /etc/prometheus
 ```
+
+Set the user and group ownership on the directories to the prometheus user.
 
 ```
 $ sudo chown -R prometheus:prometheus /etc/prometheus/consoles
 $ sudo chown -R prometheus:prometheus /etc/prometheus/console_libraries
 ```
 
+Remove files that are no longer needed
+
 ```
-$ rm -rf prometheus-2.0.0.linux-amd64.tar.gz prometheus-2.0.0.linux-amd64
+$ rm -rf prometheus-2.21.0.linux-amd64.tar.gz prometheus-2.21.0.linux-amd64
 ```
 
 # Step 3 - Prometheus Configuration
 
+Create a config file to run prometheus.
+
 ```
 $ sudo nano /etc/prometheus/prometheus.yml
 ```
+
+Copy the contents to the config file.
 
 ```
 global:
@@ -117,11 +139,15 @@ scrape_configs:
       - targets: ['localhost:9090']
 ```
 
+Set the user and group ownership on the configuration file to the prometheus user.
+
 ```
 $ sudo chown prometheus:prometheus /etc/prometheus/prometheus.yml
 ```
 
 # Step 4 - Running Prometheus
+
+Start up Prometheus as the prometheus user, providing the path to both the configuration file and the data directory.
 
 ```
 $ sudo -u prometheus /usr/local/bin/prometheus \
@@ -131,9 +157,13 @@ $   --web.console.templates=/etc/prometheus/consoles \
 $   --web.console.libraries=/etc/prometheus/console_libraries
 ```
 
+Create a new service file.
+
 ```
 $ sudo nano /etc/systemd/system/prometheus.service
 ```
+
+Copy contents to service file.
 
 ```
 [Unit]
@@ -155,17 +185,25 @@ ExecStart=/usr/local/bin/prometheus \
 WantedBy=multi-user.target
 ```
 
+Reload systemd.
+
 ```
 $ sudo systemctl daemon-reload
 ```
+
+Start Prometheus.
 
 ```
 $ sudo systemctl start prometheus
 ```
 
+Check the service status.
+
 ```
 $ sudo systemctl status prometheus
 ```
+
+Wnable service to start on boot
 
 ```
 $ sudo systemctl enable prometheus
@@ -173,33 +211,48 @@ $ sudo systemctl enable prometheus
 
 # Step 5 - Node Exporter Download
 
+Download the latest version of node_exporter: https://prometheus.io/download/
+
 ```
 $ cd ~
-$ curl -LO https://github.com/prometheus/node_exporter/releases/download/v0.15.1/node_exporter-0.15.1.linux-amd64.tar.gz
+$ curl -LO https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-amd64.tar.gz
 ```
 
-```
-$ sha256sum node_exporter-0.15.1.linux-amd64.tar.gz
-```
+Use the sha256sum command to generate a checksum and compare it to the checksum on the prometheus website to ensure correct download.
+
 
 ```
-$ tar xvf node_exporter-0.15.1.linux-amd64.tar.gz
+$ sha256sum node_exporter-1.0.1.linux-amd64.tar.gz
 ```
 
+tar the download.
+
 ```
-$ sudo cp node_exporter-0.15.1.linux-amd64/node_exporter /usr/local/bin
+$ tar xvf node_exporter-1.0.1.linux-amd64.tar.gz
+```
+
+Copy files to correct directory and change ownership to node_exporter user created earlier.
+
+```
+$ sudo cp node_exporter-1.0.1.linux-amd64/node_exporter /usr/local/bin
 $ sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter
 ```
 
+Remove files which are no longer needed.
+
 ```
-$ rm -rf node_exporter-0.15.1.linux-amd64.tar.gz node_exporter-0.15.1.linux-amd64
+$ rm -rf node_exporter-1.0.1.linux-amd64.tar.gz node_exporter-1.0.1.linux-amd64
 ```
 
 # Step 6 - Run Node Exporter
 
+Create a service file for node_exporter.
+
 ```
 $ sudo nano /etc/systemd/system/node_exporter.service 
 ```
+
+Copy the content into the service file.
 
 ```
 [Unit]
@@ -217,17 +270,25 @@ ExecStart=/usr/local/bin/node_exporter
 WantedBy=multi-user.target
 ```
 
+Reload systemd.
+
 ```
 $ sudo systemctl daemon-reload
 ```
+
+Start node_exporter.
 
 ```
 $ sudo systemctl start node_exporter
 ```
 
+Check the status.
+
 ```
 $ sudo systemctl status node_exporter
 ```
+
+Enable node_exporter to start on boot.
 
 ```
 $ sudo systemctl enable node_exporter
@@ -235,9 +296,13 @@ $ sudo systemctl enable node_exporter
 
 # Step 7 - Configuring Node Exporter to Work With Prometheus
 
+Open the config file once more and add to it.
+
 ```
 $ sudo nano /etc/prometheus/prometheus.yml
 ```
+
+Your config file should look like this.
 
 ```
 global:
@@ -254,9 +319,13 @@ scrape_configs:
       - targets: ['localhost:9100']
 ```
 
+Restart prometheus.
+
 ```
 $ sudo systemctl restart prometheus
 ```
+
+Check the status.
 
 ```
 $ sudo systemctl status prometheus
@@ -264,21 +333,31 @@ $ sudo systemctl status prometheus
 
 # Step 8 - Making Prometheus Secure
 
+Install this apache library.
+
 ```
 $ sudo apt-get install apache2-utils
 ```
+
+Set up a password with the user you want.
 
 ```
 $ sudo htpasswd -c /etc/nginx/.htpasswd sonu
 ```
 
+Copy the existing default files in case you need to revert.
+
 ```
 $ sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/prometheus
 ```
 
+Open the new configuration file and replace the location block.
+
 ```
 $ sudo nano /etc/nginx/sites-available/prometheus
 ```
+
+Replace the location block to this.
 
 ```
 ...
@@ -295,18 +374,26 @@ $ sudo nano /etc/nginx/sites-available/prometheus
 ...
 ```
 
+Deactive the default nginx config file and activate the new one.
+
 ```
 $ sudo rm /etc/nginx/sites-enabled/default
 $ sudo ln -s /etc/nginx/sites-available/prometheus /etc/nginx/sites-enabled/
 ```
 
+Check for any errors.
+
 ```
 $ sudo nginx -t
 ```
 
+Restart nginx.
+
 ```
 $ sudo systemctl reload nginx
 ```
+
+Check the status.
 
 ```
 $ sudo systemctl status nginx
@@ -314,15 +401,23 @@ $ sudo systemctl status nginx
 
 # Step 9 - Testing Prometeheus
 
+Enter the public ip online and you should see the prometheus dashboard.
+
 
 # Step 10 - Downloading and Setting Up Grafana
 
+Download the lastest version of Grafana: https://grafana.com/grafana/download
+
 ```
-$ wget https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana_5.0.4_amd64.deb
 $ sudo apt-get install -y adduser libfontconfig
-$ sudo dpkg -i grafana_5.0.4_amd64.deb
+$ wget https://dl.grafana.com/oss/release/grafana_7.2.0_amd64.deb
+$ sudo dpkg -i grafana_7.2.0_amd64.deb
 ```
+
+Set up and start the Grafana server.
 
 ```
 $ sudo systemctl daemon-reload && sudo systemctl enable grafana-server && sudo systemctl start grafana-server
 ```
+
+Enter the public ip with port 3000 online to check the grafana dashboard. Add a new data souce and select prometheus as the data source. Set the prometheus server url as the public ip url with port 9090. Click add to test the connection and save the new data source.
