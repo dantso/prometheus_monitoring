@@ -12,7 +12,7 @@ Make sure the security group has ports 80, 22, 9090, 9100, 3000 open.
 After ssh into your instance: 
 
 ```
-adduser sonu
+$ adduser sonu
 ```
 
 Enter the username you wish and set up a password. 
@@ -20,7 +20,7 @@ Give your user root privelages.
 
 
 ```
-usermod -ag sudo sonu
+$ usermod -ag sudo sonu
 ```
 
 ## Install Nginx
@@ -61,6 +61,8 @@ $ sudo chown prometheus:prometheus /etc/prometheus
 $ sudo chown prometheus:prometheus /var/lib/prometheus
 ```
 
+# Step 2 - Download Prometheus
+
 ```
 $ cd ~
 $ curl -LO https://github.com/prometheus/prometheus/releases/download/v2.0.0/prometheus-2.0.0.linux-amd64.tar.gz 
@@ -98,6 +100,8 @@ $ sudo chown -R prometheus:prometheus /etc/prometheus/console_libraries
 $ rm -rf prometheus-2.0.0.linux-amd64.tar.gz prometheus-2.0.0.linux-amd64
 ```
 
+# Step 3 - Prometheus Configuration
+
 ```
 $ sudo nano /etc/prometheus/prometheus.yml
 ```
@@ -116,6 +120,8 @@ scrape_configs:
 ```
 $ sudo chown prometheus:prometheus /etc/prometheus/prometheus.yml
 ```
+
+# Step 4 - Running Prometheus
 
 ```
 $ sudo -u prometheus /usr/local/bin/prometheus \
@@ -165,6 +171,8 @@ $ sudo systemctl status prometheus
 $ sudo systemctl enable prometheus
 ```
 
+# Step 5 - Node Exporter Download
+
 ```
 $ cd ~
 $ curl -LO https://github.com/prometheus/node_exporter/releases/download/v0.15.1/node_exporter-0.15.1.linux-amd64.tar.gz
@@ -186,6 +194,8 @@ $ sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter
 ```
 $ rm -rf node_exporter-0.15.1.linux-amd64.tar.gz node_exporter-0.15.1.linux-amd64
 ```
+
+# Step 6 - Run Node Exporter
 
 ```
 $ sudo nano /etc/systemd/system/node_exporter.service 
@@ -223,6 +233,8 @@ $ sudo systemctl status node_exporter
 $ sudo systemctl enable node_exporter
 ```
 
+# Step 7 - Configuring Node Exporter to Work With Prometheus
+
 ```
 $ sudo nano /etc/prometheus/prometheus.yml
 ```
@@ -249,6 +261,8 @@ $ sudo systemctl restart prometheus
 ```
 $ sudo systemctl status prometheus
 ```
+
+# Step 8 - Making Prometheus Secure
 
 ```
 $ sudo apt-get install apache2-utils
@@ -297,6 +311,11 @@ $ sudo systemctl reload nginx
 ```
 $ sudo systemctl status nginx
 ```
+
+# Step 9 - Testing Prometeheus
+
+
+# Step 10 - Downloading and Setting Up Grafana
 
 ```
 $ wget https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana_5.0.4_amd64.deb
